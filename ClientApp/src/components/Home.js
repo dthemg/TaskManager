@@ -1,79 +1,157 @@
 import React, { Component } from 'react';
-import initialData from './ToyData';
-import Column from './Column';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import Column from './Column';
+import TaskModal from './TaskModal';
+import initialData from './ToyData';
 
 const Container = styled.div`
   display: flex;
 `;
 
 export class Home extends Component {
-  static displayName = Home.name;
-	state = initialData;
+	static displayName = Home.name;
+		state = {
+			...initialData,
+			modalOpen: false,
+			previousStartColumn: null,
+			previousFinishColumn: null,
+			modalTask: null
+		};
 
-  onDragEnd = result => {
-    const { destination, source, draggableId } = result;
+	updateTaskState = (destination, source, draggableId, sameColumn) => {
+		const columns = this.state.columns;
+		const start = columns[source.droppableId];
+		const finish = columns[destination.droppableId];
+		const startTaskIds = Array.from(start.taskIds);
+		const finishTaskIds = Array.from(finish.taskIds);
+	
+		if (sameColumn) {
+			startTaskIds.splice(source.index, 1);
+			startTaskIds.splice(destination.index, 0, draggableId);
+		
+			columns[source.droppableId] = {
+				...start,
+				taskIds: startTaskIds
+			}
+		} else {
+			// Save previous states for modal cancellation
+			if (destination.droppableId === "column-4") {
+				this.setState({
+					previousStartColumn: {
+						...start,
+						taskIds: startTaskIds.slice()
+					},
+					previousFinishColumn: {
+						...finish, 
+						taskIds: finishTaskIds.slice()
+					}
+				})
+			}
+			
+			startTaskIds.splice(source.index, 1);
+			finishTaskIds.splice(destination.index, 0, draggableId);
 
-    if (!destination) {
-      return;
-    }
+			columns[source.droppableId] = {
+				...start,
+				taskIds: startTaskIds
+			}
+			columns[destination.droppableId] = {
+				...finish,
+				taskIds: finishTaskIds
+			}
+		}
+		
+		this.setState({
+			columns: columns
+		})
+	};
 
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
-    }
+	onModalClose = result => {
+		this.setState({
+			modalOpen: false
+		});
 
-    const columns = this.state.columns;
+		// Revert columns to previous state
+		const prevStartColumnId = this.state.previousStartColumn.id;
+		const prevFinishColumnId = this.state.previousFinishColumn.id;
 
-    const start = this.state.columns[source.droppableId];
-    const finish = this.state.columns[destination.droppableId];
-    const startTaskIds = Array.from(start.taskIds);
-    const finishTaskIds = Array.from(finish.taskIds);
+		const columns = this.state.columns
+		columns[prevStartColumnId] = this.state.previousStartColumn;
+		columns[prevFinishColumnId] = this.state.previousFinishColumn;
 
-    const sameColumn = destination.droppableId === source.droppableId;
+		this.setState({
+			columns: columns
+		})
+	}
 
-    startTaskIds.splice(source.index, 1);
-    if (sameColumn) {
-      startTaskIds.splice(destination.index, 0, draggableId);
-    } else {
-      finishTaskIds.splice(destination.index, 0, draggableId);
-    }
+	onModalSave = result => {
+		this.setState({
+			modalOpen: false
+		});
+		
+	}
 
-    columns[source.droppableId] = {
-      ...start,
-      taskIds: startTaskIds
-    }
-    if (!sameColumn) {
-      columns[destination.droppableId] = {
-        ...finish,
-        taskIds: finishTaskIds
-      }
-    }
-    
-    this.setState({
-      columns: columns
-    })
-   
-  };
+	notNull = obj => {
+		return obj && obj !== 'null' && obj !== 'undefined';
+	}
 
-  render() {
-    return (
-      <DragDropContext
-        onDragEnd={this.onDragEnd}
-      >
-        <Container>
-        {
-          this.state.columnOrder.map((columnId) => {
-          const column = this.state.columns[columnId];
-          const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
-          return <Column key={column.id} column={column} tasks={tasks}/>
-          })
-          }
-        </Container>
-      </DragDropContext>
-    )
-  }
+	onDragEnd = result => {
+		const { destination, source, draggableId } = result;
+
+		if (!destination) {
+			return;
+		}
+
+		if (
+			destination.droppableId === source.droppableId &&
+			destination.index === source.index
+		) {
+			return;
+		}
+
+		const sameColumn = destination.droppableId === source.droppableId;
+
+		// Open modal to set resolution
+		if (destination.droppableId === "column-4") {
+			this.setState({ modalOpen: true, modalTask: destination });
+		}
+
+		this.updateTaskState(destination, source, draggableId, sameColumn)
+	};
+
+	render() {
+		var task = null;
+		if (this.notNull(this.state.modalTask)) {
+			const taskId = this.state.columns[this.state.modalTask.droppableId]
+				.taskIds[this.state.modalTask.index];
+			task = this.state.tasks[taskId];
+		}
+		const modal = (
+			this.state.modalOpen ? 
+				<TaskModal 
+					onModalClose={this.onModalClose} 
+					onModalSave={this.onModalSave} 
+					task={task}
+				/> : null
+		)
+		return (
+			<div>
+				{modal}
+				<DragDropContext
+					onDragEnd={this.onDragEnd}
+				>
+					<Container>
+					{
+						this.state.columnOrder.map((columnId) => {
+							const column = this.state.columns[columnId];
+							const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
+							return <Column key={column.id} column={column} tasks={tasks}/>
+						})
+					}
+					</Container>
+				</DragDropContext>
+			</div>
+		)
+	};
 }
