@@ -6,7 +6,7 @@ const TaskBox = styled.div`
 	border: 1px solid lightgrey;
 	border-radius: 2px;
 	padding: 8px;
-	margin-bottom: 8px;
+	margin: 8px;
 	background-color: ${props => (props.isDragging ? 'lightgreen' : 'white')};
 `;
 
@@ -30,6 +30,7 @@ const Assignee = styled.p`
 const TaskTitle = styled.p`
 	font-size: 14px;
 	font-weight: bold;
+	margin: 0;
 	text-decoration: ${props => (props.columnId === 'column-4' ? 'line-through' : null)};
 `;
 

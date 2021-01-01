@@ -85,11 +85,23 @@ export class Home extends Component {
 		})
 	}
 
-	onModalSave = result => {
-		this.setState({
-			modalOpen: false
-		});
+	getModalTaskId = () => {
+		const taskId = this.state.columns[this.state.modalTask.droppableId]
+			.taskIds[this.state.modalTask.index];
+		return taskId;
+	}
 		
+	onModalSave = resolution => {
+		const taskId = this.getModalTaskId();
+		var task = this.state.tasks[taskId];
+		task.resolution = resolution
+		this.setState({
+			modalOpen: false,
+			tasks: {
+				...this.state.tasks,
+				taskId: task
+			}
+		});
 	}
 
 	notNull = obj => {
@@ -123,9 +135,7 @@ export class Home extends Component {
 	render() {
 		var task = null;
 		if (this.notNull(this.state.modalTask)) {
-			const taskId = this.state.columns[this.state.modalTask.droppableId]
-				.taskIds[this.state.modalTask.index];
-			task = this.state.tasks[taskId];
+			task = this.state.tasks[this.getModalTaskId()];
 		}
 		const modal = (
 			this.state.modalOpen ? 
