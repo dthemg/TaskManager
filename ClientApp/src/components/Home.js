@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Column from './Column';
+import TaskDetails from './TaskDetails';
 import TaskModal from './TaskModal';
 import initialData from './ToyData';
 
-const Container = styled.div`
-  display: flex;
+const DragDropContainer = styled.div`
+	display: flex;
 `;
+
+const Container = styled.div`
+`
 
 export class Home extends Component {
 	static displayName = Home.name;
@@ -16,7 +20,8 @@ export class Home extends Component {
 			modalOpen: false,
 			previousStartColumn: null,
 			previousFinishColumn: null,
-			modalTask: null
+			modalTask: null,
+			detailsOpen: false
 		};
 
 	updateTaskState = (destination, source, draggableId, sameColumn) => {
@@ -104,6 +109,10 @@ export class Home extends Component {
 		});
 	}
 
+	onClickTask = (taskId) => {
+		this.setState({detailsOpen: true});
+	}
+
 	notNull = obj => {
 		return obj && obj !== 'null' && obj !== 'undefined';
 	}
@@ -124,7 +133,6 @@ export class Home extends Component {
 
 		const sameColumn = destination.droppableId === source.droppableId;
 
-		// Open modal to set resolution
 		if (destination.droppableId === "column-4") {
 			this.setState({ modalOpen: true, modalTask: destination });
 		}
@@ -144,24 +152,41 @@ export class Home extends Component {
 					onModalSave={this.onModalSave} 
 					task={task}
 				/> : null
-		)
+		);
+		const taskDetails = (
+			this.state.detailsOpen ? 
+				<TaskDetails /> : null
+		);
+
 		return (
-			<div>
-				{modal}
-				<DragDropContext
-					onDragEnd={this.onDragEnd}
-				>
-					<Container>
-					{
-						this.state.columnOrder.map((columnId) => {
-							const column = this.state.columns[columnId];
-							const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
-							return <Column key={column.id} column={column} tasks={tasks}/>
-						})
-					}
-					</Container>
-				</DragDropContext>
-			</div>
+			<Container>
+				<div>
+					{modal}
+					<DragDropContext
+						onDragEnd={this.onDragEnd}
+					>
+						<DragDropContainer>
+						{
+							this.state.columnOrder.map((columnId) => {
+								const column = this.state.columns[columnId];
+								const tasks = column.taskIds.map(taskId => this.state.tasks[taskId]);
+								return (
+									<Column 
+										key={column.id} 
+										column={column} 
+										tasks={tasks}
+										onClickTask={this.onClickTask}
+									/>
+								)
+							})
+						}
+						</DragDropContainer>
+					</DragDropContext>
+				</div>
+				<div>
+					{taskDetails}
+				</div>
+			</Container>
 		)
 	};
 }

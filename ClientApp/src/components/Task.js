@@ -27,11 +27,12 @@ const Assignee = styled.p`
 	font-style: italic;
 `;
 
-const TaskTitle = styled.p`
+const TaskTitle = styled.a`
 	font-size: 14px;
 	font-weight: bold;
 	margin: 0;
 	text-decoration: ${props => (props.columnId === 'column-4' ? 'line-through' : null)};
+	href: '#';
 `;
 
 const Description = styled.p`
@@ -39,6 +40,11 @@ const Description = styled.p`
 `;
 
 export default class Task extends React.Component {
+
+	onClickTask = (event) => {
+		this.props.onClickTask(this.props.task.id);
+	}
+
 	render() {
 		return (
 		<Draggable
@@ -54,7 +60,7 @@ export default class Task extends React.Component {
 			>
 				<Header>
 					<UserIcon />
-					<TaskTitle columnId={this.props.columnId}>
+					<TaskTitle columnId={this.props.columnId} onClick={() => this.onClickTask(this.props.task.id)}>
 						{this.props.task.title}
 					</TaskTitle>
 				</Header>

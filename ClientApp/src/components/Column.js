@@ -22,33 +22,41 @@ const TaskList = styled.div`
 `;
 
 class InnerList extends React.PureComponent {
-  render() {
-    return this.props.tasks.map((task, index) => (
-      <Task key={task.id} task={task} index={index} columnId={this.props.columnId}/>)
-    );
-  }
+	render() {
+		return this.props.tasks.map((task, index) => (
+		<Task 
+			key={task.id} 
+			task={task} 
+			index={index} 
+			onClickTask={this.props.onClickTask}
+			columnId={this.props.columnId}
+		/>)
+		);
+	}
 }
 
 export default class Column extends React.Component {
-  render() {
-    return (
-      <Container>
-        <Title>{this.props.column.title}</Title>
-        <Droppable droppableId={ this.props.column.id }>
-          { (provided, snapshot) => (
-            <TaskList
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              isDraggingOver={snapshot.isDraggingOver}
-            >
-			  <InnerList 
-				  tasks={this.props.tasks} 
-				  columnId={this.props.column.id}/>
-              {provided.placeholder}
-            </TaskList>
-          )}
-        </Droppable>
-      </Container>
-    )
-  }
+	render() {
+		return (
+		<Container>
+			<Title>{this.props.column.title}</Title>
+			<Droppable droppableId={ this.props.column.id }>
+			{ (provided, snapshot) => (
+				<TaskList
+				ref={provided.innerRef}
+				{...provided.droppableProps}
+				isDraggingOver={snapshot.isDraggingOver}
+				>
+				<InnerList 
+					tasks={this.props.tasks} 
+					columnId={this.props.column.id}
+					onClickTask={this.props.onClickTask}
+				/>
+				{provided.placeholder}
+				</TaskList>
+			)}
+			</Droppable>
+		</Container>
+		)
+	}
 }
