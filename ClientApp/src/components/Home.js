@@ -8,9 +8,13 @@ import initialData from './ToyData';
 
 const DragDropContainer = styled.div`
 	display: flex;
+	overflow: auto;
+	height: 100%;
 `;
 
 const Container = styled.div`
+	display: flex;
+	justify-content: center;
 `
 
 export class Home extends Component {
@@ -71,6 +75,9 @@ export class Home extends Component {
 			columns: columns
 		})
 	};
+	exitTaskDetails = () => {
+		this.setState({detailsOpen: false})
+	}
 
 	onModalClose = result => {
 		this.setState({
@@ -136,7 +143,7 @@ export class Home extends Component {
 		if (destination.droppableId === "column-4") {
 			this.setState({ modalOpen: true, modalTask: destination });
 		}
-
+		
 		this.updateTaskState(destination, source, draggableId, sameColumn)
 	};
 
@@ -155,17 +162,17 @@ export class Home extends Component {
 		);
 		const taskDetails = (
 			this.state.detailsOpen ? 
-				<TaskDetails /> : null
+				<TaskDetails exitTaskDetails={this.exitTaskDetails}/> : null
 		);
 
 		return (
 			<Container>
-				<div>
+				<DragDropContainer>
 					{modal}
 					<DragDropContext
 						onDragEnd={this.onDragEnd}
 					>
-						<DragDropContainer>
+						
 						{
 							this.state.columnOrder.map((columnId) => {
 								const column = this.state.columns[columnId];
@@ -180,12 +187,10 @@ export class Home extends Component {
 								)
 							})
 						}
-						</DragDropContainer>
+						
 					</DragDropContext>
-				</div>
-				<div>
-					{taskDetails}
-				</div>
+				</DragDropContainer>
+				{taskDetails}
 			</Container>
 		)
 	};

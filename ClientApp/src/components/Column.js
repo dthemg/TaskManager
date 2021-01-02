@@ -4,33 +4,38 @@ import styled from 'styled-components';
 import Task from './Task';
 
 const Container = styled.div`
-  margin: 8px;
-  border: 1px solid lightgrey;
-  border-radius: 2px;
-  width: 220px;
-  display: flex;
-  flex-direction: column;
+	margin: 4px;
+	border: 1px solid lightgrey;
+	border-radius: 2px;
+	width: 200px;
+	display: flex;
+	flex-direction: column;
 `;
+
 const Title = styled.h3`
-  padding: 8px;
+	padding: 8px;
+	text-align: center;
+	background-color: rgb(245, 225, 177);
 `;
+
 const TaskList = styled.div`
-  transition: background-color 0.2s ease;
-  background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
-  flex-grow: 1;
-  min-height: 100px;
+	transition: background-color 0.2s ease;
+	background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
+	flex-grow: 1;
+	min-height: 100px;
+	min-width: 100px;
 `;
 
 class InnerList extends React.PureComponent {
 	render() {
 		return this.props.tasks.map((task, index) => (
-		<Task 
-			key={task.id} 
-			task={task} 
-			index={index} 
-			onClickTask={this.props.onClickTask}
-			columnId={this.props.columnId}
-		/>)
+			<Task 
+				key={task.id} 
+				task={task} 
+				index={index} 
+				onClickTask={this.props.onClickTask}
+				columnId={this.props.columnId}
+			/>)
 		);
 	}
 }

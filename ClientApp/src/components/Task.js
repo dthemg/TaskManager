@@ -68,7 +68,7 @@ export default class Task extends React.Component {
 					{this.props.task.description}
 				</Description>
 				<Assignee>
-				{this.props.task.assignee}
+					{this.props.task.assignee ? this.props.task.assignee : "Unassigned"}
 				</Assignee>
 			</TaskBox>
 			)}
