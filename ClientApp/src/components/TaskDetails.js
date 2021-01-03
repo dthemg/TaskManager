@@ -40,6 +40,8 @@ export class TaskDetails extends React.Component {
 
 	async populateTaskData() {
 		// Sample response
+		//const response = await fetch('taskdata');
+		//const data = await response.json();
 		const taskData = {
 			'title': 'Task title',
 			'long_description': 'This is a longer description that is read from DB',
