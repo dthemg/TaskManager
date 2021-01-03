@@ -120,6 +120,17 @@ export class Home extends Component {
 		this.setState({detailsOpen: true});
 	}
 
+	onChangeTaskAssignee = (taskId, assignee) => {
+		const task = this.state.tasks[taskId];
+		task.assignee = assignee
+		this.setState({
+			tasks: {
+				...this.state.tasks,
+				taskId: task
+			}
+		});
+	} 
+
 	notNull = obj => {
 		return obj && obj !== 'null' && obj !== 'undefined';
 	}
@@ -162,7 +173,10 @@ export class Home extends Component {
 		);
 		const taskDetails = (
 			this.state.detailsOpen ? 
-				<TaskDetails exitTaskDetails={this.exitTaskDetails}/> : null
+				<TaskDetails 
+					exitTaskDetails={this.exitTaskDetails}
+					onChangeTaskAssignee={this.onChangeTaskAssignee}
+				/> : null
 		);
 
 		return (
@@ -172,7 +186,6 @@ export class Home extends Component {
 					<DragDropContext
 						onDragEnd={this.onDragEnd}
 					>
-						
 						{
 							this.state.columnOrder.map((columnId) => {
 								const column = this.state.columns[columnId];

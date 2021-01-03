@@ -45,6 +45,7 @@ export class TaskDetails extends React.Component {
 			'long_description': 'This is a longer description that is read from DB',
 			'status': 'In progress',
 			'assignee': 'Jonas',
+			'id': 'task-1',
 			'comments': [
 				'This is one comment',
 				'This is another comment'
@@ -68,6 +69,7 @@ export class TaskDetails extends React.Component {
 				assignee: event.target.value
 			}
 		})
+		this.props.onChangeTaskAssignee(this.state.taskData.id, event.target.value);
 	}
 
 	renderAssigneeDropdown = () => {
