@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -25,7 +26,8 @@ export class TaskDetails extends React.Component {
 		this.state = {
 			taskData: null, 
 			loading: true,
-			windowWidth: window.innerWidth
+			windowWidth: window.innerWidth,
+			teamMembers: null
 		};
 		
 	}
@@ -42,26 +44,35 @@ export class TaskDetails extends React.Component {
 		// Sample response
 		//const response = await fetch('taskdata');
 		//const data = await response.json();
-		const taskData = {
-			'title': 'Task title',
-			'long_description': 'This is a longer description that is read from DB',
-			'status': 'In progress',
-			'assignee': 'Jonas',
-			'id': 'task-1',
-			'comments': [
-				'This is one comment',
-				'This is another comment'
-			]
-		}
-		const teamMembers = [
-			'Jonas', 'David', 'Fredrik'
-		]
+		const taskId = "2"
+		const getTaskUrl = "https://localhost:5001/api/TaskItems/".concat(taskId);
 
-		this.setState({
-			taskData: taskData, 
-			loading: false, 
-			teamMembers: teamMembers
-		});
+		var self = this;
+		axios.get(getTaskUrl)
+			.then((response) => {
+				var data = response.data;
+				console.log(data);
+				self.setState({
+					taskData: {
+						'title': data.title,
+						'assignee': data.assignee,
+						'long_description': data.longDescription,
+						'status': data.status,
+						'id': data.id,
+						'comments': [
+							'This is one comment',
+							'This is another comment'
+						]
+					},
+					teamMembers: [
+						'Jonas', 'David', 'Fredrik'
+					],
+					loading: false
+				});
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	}
 
 	onAssigneeChange = (event) => {
