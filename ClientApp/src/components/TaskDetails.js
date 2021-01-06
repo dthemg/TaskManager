@@ -26,7 +26,6 @@ export class TaskDetails extends React.Component {
 		this.state = {
 			taskData: null, 
 			loading: true,
-			windowWidth: window.innerWidth,
 			teamMembers: null
 		};
 		
@@ -44,7 +43,7 @@ export class TaskDetails extends React.Component {
 		// Sample response
 		//const response = await fetch('taskdata');
 		//const data = await response.json();
-		const taskId = "2"
+		const taskId = "1"
 		const getTaskUrl = "https://localhost:5001/api/TaskItems/".concat(taskId);
 
 		var self = this;
@@ -76,13 +75,39 @@ export class TaskDetails extends React.Component {
 	}
 
 	onAssigneeChange = (event) => {
-		this.setState({
-			taskData: {
-				...this.state.taskData, 
-				assignee: event.target.value
-			}
-		})
-		this.props.onChangeTaskAssignee(this.state.taskData.id, event.target.value);
+		const taskId = 1
+		const putTaskUrl = "https://localhost:5001/api/TaskItems/".concat(taskId.toString())
+		var newAssignee = event.target.value
+		const newTaskData = {
+			id: taskId,
+			assignee: newAssignee,
+			longDescription: this.state.taskData.long_description,
+			status: this.state.taskData.status,
+			title: this.state.taskData.title
+		}
+		
+		axios.put(putTaskUrl, newTaskData)
+			.then(response => {
+				console.log(response);
+				console.log(newAssignee);
+				if (response.status === 204) {
+					this.setState({
+						taskData: {
+							...this.state.taskData,
+							assignee: newAssignee
+						}
+					});
+					// Below does not work for some reason...
+					//self.props.onChangeTaskAssignee(self.state.taskData.id, newAssignee);
+				} else {
+					console.log("Update did not work as expected", response.status)
+        }
+				
+			})
+			.catch(error => {
+				console.log(error);
+			})
+		
 	}
 
 	renderAssigneeDropdown = () => {
