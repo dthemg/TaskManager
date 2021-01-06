@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManager.Models
 {
@@ -14,13 +16,9 @@ namespace TaskManager.Models
     public string status { get; set; }
     
     // Does not work?
-    //public List<Comment> comments { get; set; }
-  }
-
-  public class Comment
-  {
-    public long Id { get; set; }
-    public string comment_text { get; set; }
+    // You can't have a list of strings like this - because you cant have a list
+    // in a SQL table cell
+    //public IEnumerable<string> comments { get; set; }
   }
 
 }

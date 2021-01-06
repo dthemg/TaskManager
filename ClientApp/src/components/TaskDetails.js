@@ -100,7 +100,7 @@ export class TaskDetails extends React.Component {
 					// Below does not work for some reason...
 					//self.props.onChangeTaskAssignee(self.state.taskData.id, newAssignee);
 				} else {
-					console.log("Update did not work as expected", response.status)
+					console.log("Update did not work as expected", response.status);
         }
 				
 			})
