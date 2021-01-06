@@ -23,7 +23,9 @@ namespace TaskManager
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<TaskContext>(opt =>
-				opt.UseInMemoryDatabase("TaskData"));
+				opt
+					.UseLazyLoadingProxies()
+					.UseInMemoryDatabase("TaskData"));
 
 			services.AddControllersWithViews();
 

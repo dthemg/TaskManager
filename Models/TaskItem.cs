@@ -14,11 +14,17 @@ namespace TaskManager.Models
     public string assignee { get; set; }
     public string longDescription { get; set; }
     public string status { get; set; }
-    
+    public virtual List<Comment> comments { get; set; }
     // Does not work?
     // You can't have a list of strings like this - because you cant have a list
     // in a SQL table cell
     //public IEnumerable<string> comments { get; set; }
+  }
+
+  public class Comment
+  {
+    public long Id { get; set; }
+    public string comment_text { get; set; }
   }
 
 }
