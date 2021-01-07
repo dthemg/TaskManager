@@ -3,6 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import axios from 'axios';
+import TASK_URL from '../configuration/Urls';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -44,24 +45,20 @@ export class TaskDetails extends React.Component {
 		//const response = await fetch('taskdata');
 		//const data = await response.json();
 		const taskId = "1"
-		const getTaskUrl = "https://localhost:5001/api/TaskItems/".concat(taskId);
+		const getTaskUrl = TASK_URL.concat(taskId);
 
 		var self = this;
 		axios.get(getTaskUrl)
 			.then((response) => {
 				var data = response.data;
-				console.log(data);
 				self.setState({
 					taskData: {
 						'title': data.title,
 						'assignee': data.assignee,
-						'long_description': data.longDescription,
+						'longDescription': data.longDescription,
 						'status': data.status,
 						'id': data.id,
-						'comments': [
-							'This is one comment',
-							'This is another comment'
-						]
+						'comments': data.comments
 					},
 					teamMembers: [
 						'Jonas', 'David', 'Fredrik'
@@ -76,39 +73,35 @@ export class TaskDetails extends React.Component {
 
 	onAssigneeChange = (event) => {
 		const taskId = 1
-		const putTaskUrl = "https://localhost:5001/api/TaskItems/".concat(taskId.toString())
 		var newAssignee = event.target.value
 		const newTaskData = {
-			id: taskId,
+			...this.state.taskData,
 			assignee: newAssignee,
-			longDescription: this.state.taskData.long_description,
-			status: this.state.taskData.status,
-			title: this.state.taskData.title
+			id: taskId
 		}
-		
+		this.updateTask(newTaskData);
+	}
+
+	async updateTask(newTaskData) {
+		const taskId = 1
+		const putTaskUrl = TASK_URL.concat(taskId.toString())
 		axios.put(putTaskUrl, newTaskData)
 			.then(response => {
-				console.log(response);
-				console.log(newAssignee);
 				if (response.status === 204) {
-					this.setState({
-						taskData: {
-							...this.state.taskData,
-							assignee: newAssignee
-						}
-					});
-					// Below does not work for some reason...
-					//self.props.onChangeTaskAssignee(self.state.taskData.id, newAssignee);
+					this.setState({ taskData: newTaskData });
+					this.props.onChangeTaskAssignee(
+						'task-1',
+						newTaskData.assignee
+					);
 				} else {
-					console.log("Update did not work as expected", response.status);
-        }
-				
+					console.error("Update did not work as expected", response);
+				}
+
 			})
 			.catch(error => {
 				console.log(error);
 			})
-		
-	}
+  }
 
 	renderAssigneeDropdown = () => {
 		return (
@@ -136,10 +129,10 @@ export class TaskDetails extends React.Component {
 		const spinner = <Spinner size="sm" animation="border"/>
 		const status = loading ? spinner : this.state.taskData.status;
 		const header = loading ? spinner : <h3>{this.state.taskData.title}</h3>;
-		const description = loading ? spinner : this.state.taskData.long_description; 
+		const description = loading ? spinner : this.state.taskData.longDescription; 
 		const assignee = loading ? spinner : this.renderAssigneeDropdown();
 		const comments = loading ? spinner : (
-			this.state.taskData.comments.map((value, index) => <p key={index}>{value}</p>)
+			this.state.taskData.comments.map((item, index) => <p key={index}>{item.commentText}</p>)
 		);
 		return (
 			<Container>
