@@ -7,53 +7,51 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Models;
 
-// https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio
-
 namespace TaskManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TaskItemsController : ControllerBase
+    public class EpicItemsController : ControllerBase
     {
         private readonly Context _context;
 
-        public TaskItemsController(Context context)
+        public EpicItemsController(Context context)
         {
             _context = context;
         }
 
-        // GET: api/TaskItems
+        // GET: api/EpicItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTaskItems()
+        public async Task<ActionResult<IEnumerable<EpicItem>>> GetEpicItems()
         {
-            return await _context.TaskItems.ToListAsync();
+            return await _context.EpicItems.ToListAsync();
         }
 
-        // GET: api/TaskItems/5
+        // GET: api/EpicItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TaskItem>> GetTaskItem(long id)
+        public async Task<ActionResult<EpicItem>> GetEpicItem(long id)
         {
-            var taskItem = await _context.TaskItems.FindAsync(id);
+            var epicItem = await _context.EpicItems.FindAsync(id);
 
-            if (taskItem == null)
+            if (epicItem == null)
             {
                 return NotFound();
             }
 
-            return taskItem;
+            return epicItem;
         }
 
-        // PUT: api/TaskItems/5
+        // PUT: api/EpicItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTaskItem(long id, TaskItem taskItem)
+        public async Task<IActionResult> PutEpicItem(long id, EpicItem epicItem)
         {
-            if (id != taskItem.Id)
+            if (id != epicItem.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(taskItem).State = EntityState.Modified;
+            _context.Entry(epicItem).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +59,7 @@ namespace TaskManager.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TaskItemExists(id))
+                if (!EpicItemExists(id))
                 {
                     return NotFound();
                 }
@@ -74,36 +72,36 @@ namespace TaskManager.Controllers
             return NoContent();
         }
 
-        // POST: api/TaskItems
+        // POST: api/EpicItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TaskItem>> PostTaskItem(TaskItem taskItem)
+        public async Task<ActionResult<EpicItem>> PostEpicItem(EpicItem epicItem)
         {
-            _context.TaskItems.Add(taskItem);
+            _context.EpicItems.Add(epicItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTaskItem), new { id = taskItem.Id }, taskItem);
+            return CreatedAtAction(nameof(GetEpicItem), new { id = epicItem.Id }, epicItem);
         }
 
-        // DELETE: api/TaskItems/5
+        // DELETE: api/EpicItems/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTaskItem(long id)
+        public async Task<IActionResult> DeleteEpicItem(long id)
         {
-            var taskItem = await _context.TaskItems.FindAsync(id);
-            if (taskItem == null)
+            var epicItem = await _context.EpicItems.FindAsync(id);
+            if (epicItem == null)
             {
                 return NotFound();
             }
 
-            _context.TaskItems.Remove(taskItem);
+            _context.EpicItems.Remove(epicItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TaskItemExists(long id)
+        private bool EpicItemExists(long id)
         {
-            return _context.TaskItems.Any(e => e.Id == id);
+            return _context.EpicItems.Any(e => e.Id == id);
         }
     }
 }
