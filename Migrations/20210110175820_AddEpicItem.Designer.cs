@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TaskManager.Models;
@@ -9,9 +10,10 @@ using TaskManager.Models;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210110175820_AddEpicItem")]
+    partial class AddEpicItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,7 +101,7 @@ namespace TaskManager.Migrations
             modelBuilder.Entity("TaskManager.Models.TaskItem", b =>
                 {
                     b.HasOne("TaskManager.Models.EpicItem", "EpicItem")
-                        .WithMany("TaskItems")
+                        .WithMany("taskItems")
                         .HasForeignKey("EpicItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -109,7 +111,7 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Models.EpicItem", b =>
                 {
-                    b.Navigation("TaskItems");
+                    b.Navigation("taskItems");
                 });
 
             modelBuilder.Entity("TaskManager.Models.TaskItem", b =>

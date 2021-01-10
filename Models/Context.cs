@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.Models
 {
-  public class Context : DbContext
-  {
-    public Context(DbContextOptions<Context> options)
-      :base(options)
+    public class Context : DbContext
     {
-    }
+        public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<EpicItem> EpicItems { get; set; }
 
-    public DbSet<TaskItem> TaskItems { get; set; }
-    public DbSet<EpicItem> EpicItems { get; set; }
-  }
+        public Context(DbContextOptions<Context> options)
+            :base(options)
+        {
+        }
+    }
 }

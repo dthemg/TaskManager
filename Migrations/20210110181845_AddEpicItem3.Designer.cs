@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TaskManager.Models;
@@ -9,9 +10,10 @@ using TaskManager.Models;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210110181845_AddEpicItem3")]
+    partial class AddEpicItem3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,8 +86,6 @@ namespace TaskManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EpicItemId");
-
                     b.ToTable("TaskItems");
                 });
 
@@ -94,22 +94,6 @@ namespace TaskManager.Migrations
                     b.HasOne("TaskManager.Models.TaskItem", null)
                         .WithMany("comments")
                         .HasForeignKey("TaskItemId");
-                });
-
-            modelBuilder.Entity("TaskManager.Models.TaskItem", b =>
-                {
-                    b.HasOne("TaskManager.Models.EpicItem", "EpicItem")
-                        .WithMany("TaskItems")
-                        .HasForeignKey("EpicItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EpicItem");
-                });
-
-            modelBuilder.Entity("TaskManager.Models.EpicItem", b =>
-                {
-                    b.Navigation("TaskItems");
                 });
 
             modelBuilder.Entity("TaskManager.Models.TaskItem", b =>

@@ -12,7 +12,9 @@ namespace TaskManager.Models
         public string longDescription { get; set; }
         public string status { get; set; }
         public virtual List<Comment> comments { get; set; }
-        //public EpicItem EpicItem { get; set; }
+
+        public long EpicItemId { get; set; }
+        public virtual EpicItem EpicItem { get; set; }
 
     }
 

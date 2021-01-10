@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Models
+﻿using System.Collections.Generic;
+
+namespace TaskManager.Models
 {
 	public class EpicItem
 	{
@@ -6,5 +8,6 @@
 		public string description { get; set; }
 		public string title { get; set; }
 		public string status { get; set; }
+		public virtual ICollection<TaskItem> TaskItems { get; set; }
 	}
 }
