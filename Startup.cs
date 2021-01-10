@@ -25,7 +25,7 @@ namespace TaskManager
 			services.AddDbContext<Context>(opt =>
 				opt
 					.UseLazyLoadingProxies()
-					.UseInMemoryDatabase("TaskData"));
+					.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
 			services.AddControllersWithViews();
 
