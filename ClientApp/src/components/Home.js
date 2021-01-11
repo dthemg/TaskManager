@@ -5,6 +5,8 @@ import Column from './Column';
 import TaskDetails from './TaskDetails';
 import TaskModal from './TaskModal';
 import initialData from './ToyData';
+import { EPIC_URL } from '../configuration/Urls';
+import axios from 'axios';
 
 const DragDropContainer = styled.div`
 	display: flex;
@@ -27,6 +29,26 @@ export class Home extends Component {
 			modalTask: null,
 			detailsOpen: false
 		};
+
+	componentDidMount() {
+		this.populateTaskData()
+  }
+
+	async populateTaskData() {
+		const epicId = "4";
+		const getEpicURL = EPIC_URL.concat(epicId);
+		axios.get(getEpicURL)
+			.then((response) => {
+				var data = response.data;
+				console.log(data)
+				this.setState({
+					taskData: data
+				})
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+  }
 
 	updateTaskState = (destination, source, draggableId, sameColumn) => {
 		const columns = this.state.columns;

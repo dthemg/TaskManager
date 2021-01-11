@@ -3,7 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import axios from 'axios';
-import TASK_URL from '../configuration/Urls';
+import { TASK_URL } from '../configuration/Urls';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -44,11 +44,11 @@ export class TaskDetails extends React.Component {
 		// Sample response
 		//const response = await fetch('taskdata');
 		//const data = await response.json();
-		const taskId = "1"
-		const getTaskUrl = TASK_URL.concat(taskId);
+		const taskId = "10";
+		const getTaskURL = TASK_URL.concat(taskId);
 
 		var self = this;
-		axios.get(getTaskUrl)
+		axios.get(getTaskURL)
 			.then((response) => {
 				var data = response.data;
 				self.setState({
@@ -72,7 +72,7 @@ export class TaskDetails extends React.Component {
 	}
 
 	onAssigneeChange = (event) => {
-		const taskId = 1
+		const taskId = "10"
 		var newAssignee = event.target.value
 		const newTaskData = {
 			...this.state.taskData,
@@ -83,7 +83,7 @@ export class TaskDetails extends React.Component {
 	}
 
 	async updateTask(newTaskData) {
-		const taskId = 1
+		const taskId = "10";
 		const putTaskUrl = TASK_URL.concat(taskId.toString())
 		axios.put(putTaskUrl, newTaskData)
 			.then(response => {
