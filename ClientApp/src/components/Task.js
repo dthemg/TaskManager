@@ -31,12 +31,12 @@ const TaskTitle = styled.a`
 	font-size: 14px;
 	font-weight: bold;
 	margin: 0;
-	text-decoration: ${props => (props.columnId === 'column-4' ? 'line-through' : null)};
+	text-decoration: ${props => (props.columnId === 'done' ? 'line-through' : null)};
 	href: '#';
 `;
 
 const Description = styled.p`
-	text-decoration: ${props => (props.columnId === 'column-4' ? 'line-through' : null)};
+	text-decoration: ${props => (props.columnId === 'done' ? 'line-through' : null)};
 `;
 
 export default class Task extends React.Component {

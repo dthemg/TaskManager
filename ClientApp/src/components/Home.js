@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Column from './Column';
 import TaskDetails from './TaskDetails';
 import TaskModal from './TaskModal';
-import initialData from './ToyData';
 import { EPIC_URL } from '../configuration/Urls';
 import axios from 'axios';
 
@@ -19,10 +18,37 @@ const Container = styled.div`
 	justify-content: center;
 `
 
+const columns = {
+	'todo': {
+		id: 'todo',
+		title: 'TODO',
+		taskIds: []
+	},
+	'in-progress': {
+		id: 'in-progress',
+		title: 'In Progress',
+		taskIds: [],
+	},
+	'in-review': {
+		id: 'in-review',
+		title: 'In Review',
+		taskIds: []
+	},
+	'done': {
+		id: 'done',
+		title: 'Done',
+		taskIds: []
+	}
+};
+
+const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
+
 export class Home extends Component {
 	static displayName = Home.name;
 		state = {
-			...initialData,
+			tasks: {},
+			columnOrder: columnOrder,
+			columns: columns,
 			modalOpen: false,
 			previousStartColumn: null,
 			previousFinishColumn: null,
@@ -40,9 +66,23 @@ export class Home extends Component {
 		axios.get(getEpicURL)
 			.then((response) => {
 				var data = response.data;
-				console.log(data)
+
+				var newTasks = {};
+				var newColumns = columns;
+
+				data.taskItems.forEach(function (item, idx) {
+					var id = item.id.toString()
+					newColumns["todo"]["taskIds"].push(id);
+					newTasks[id] = {
+						...item,
+						id: id,
+						resolution: "TODO"
+					};
+				});
+
 				this.setState({
-					taskData: data
+					tasks: newTasks,
+					columns: newColumns
 				})
 			})
 			.catch((error) => {
@@ -67,7 +107,7 @@ export class Home extends Component {
 			}
 		} else {
 			// Save previous states for modal cancellation
-			if (destination.droppableId === "column-4") {
+			if (destination.droppableId === "done") {
 				this.setState({
 					previousStartColumn: {
 						...start,
@@ -173,7 +213,7 @@ export class Home extends Component {
 
 		const sameColumn = destination.droppableId === source.droppableId;
 
-		if (destination.droppableId === "column-4") {
+		if (destination.droppableId === "done") {
 			this.setState({ modalOpen: true, modalTask: destination });
 		}
 		
