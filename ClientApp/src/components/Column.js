@@ -3,17 +3,19 @@ import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Task from './Task';
 
-const Container = styled.div`
+const ColumnContainer = styled.div`
 	margin: 4px;
 	border: 1px solid lightgrey;
 	border-radius: 2px;
-	width: 200px;
-	display: flex;
-	flex-direction: column;
+	flex-grow: 1;
+	flex-basis: 0;
 `;
 
 const Title = styled.h3`
-	padding: 8px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	padding-left: 2px;
+	padding-right: 2px;
 	text-align: center;
 	background-color: rgb(245, 225, 177);
 `;
@@ -21,9 +23,8 @@ const Title = styled.h3`
 const TaskList = styled.div`
 	transition: background-color 0.2s ease;
 	background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
-	flex-grow: 1;
 	min-height: 100px;
-	min-width: 120px;
+	min-width: 100px;
 `;
 
 class InnerList extends React.PureComponent {
@@ -43,7 +44,7 @@ class InnerList extends React.PureComponent {
 export default class Column extends React.Component {
 	render() {
 		return (
-		<Container>
+		<ColumnContainer>
 			<Title>{this.props.column.title}</Title>
 			<Droppable droppableId={ this.props.column.id }>
 			{(provided, snapshot) => (
@@ -61,7 +62,7 @@ export default class Column extends React.Component {
 				</TaskList>
 			)}
 			</Droppable>
-		</Container>
+		</ColumnContainer>
 		)
 	}
 }

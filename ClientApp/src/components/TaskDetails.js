@@ -6,15 +6,15 @@ import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
-	overflow: visible;
+	overflow-x: visible;
 	width: 300px;
-	height: 100vh;
 	display: flex;
 	position: relative;
 	padding: 16px;
+	flex-direction: row;
 `
 
-const Cross = styled.img`
+const Cross = styled.input`
 	position: absolute;
 	right: 16px;
 	top: 16px;
@@ -105,9 +105,13 @@ export class TaskDetails extends React.Component {
 
 		return (
 			<Container>
-				<a href="#">
-					<Cross src={x} onClick={this.onClickExit}></Cross>
-				</a>
+				<Cross
+					onClick={this.onClickExit}
+					type="image"
+					src={x}
+				>
+				</Cross>
+
 				<div>
 					{header}
 					<h5>Status</h5>
