@@ -40,7 +40,7 @@ export async function loadEpic(epicId, onLoad) {
         newTasks[id] = {
           ...item,
           id: id,
-          resolution: "TODO"
+          resolution: null
         }
       });
       onLoad(newTasks, newColumns);
@@ -66,12 +66,10 @@ export async function loadTaskDetails(taskId, onLoad) {
 export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
   /* Change which user is assigned to a task */
   const url = `${CHANGE_TASK_ASSIGNEE_URL}${taskId}/${newAssignee}`;
-  console.log(url);
   axios.put(url)
     .then((response) => {
       if (response.status === 204) {
         onLoad(newAssignee)
-        console.log(newAssignee)
       } else {
         console.error(`Update not successful: ${response.status}`)
       }

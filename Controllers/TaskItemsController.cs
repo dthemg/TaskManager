@@ -43,6 +43,31 @@ namespace TaskManager.Controllers
             return taskItem;
         }
 
+        // PUT: api/TaskItems/changeResolution/5
+        [HttpPut("changeResolution/{id}/{newResolution}")]
+        public async Task<IActionResult> PutTaskResolution(long id, string newResolution)
+		{
+            var task = new TaskItem() { Id = id, resolution = newResolution };
+            try 
+            {
+                _context.TaskItems.Attach(task);
+                _context.Entry(task).Property(item => item.resolution).IsModified = true;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+			{
+                if (!TaskItemExists(id))
+				{
+                    return NotFound();
+				}
+                else
+				{
+                    throw;
+				}
+			}
+            return NoContent();
+		}
+
         // PUT: api/TaskItems/changeAssignee/5
         [HttpPut("changeAssignee/{id}/{newAssignee}")]
         public async Task<IActionResult> PutTaskAssignee(long id, string newAssignee)

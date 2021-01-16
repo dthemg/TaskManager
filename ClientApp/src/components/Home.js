@@ -96,6 +96,7 @@ export class Home extends Component {
 			columns: columns
 		})
 	};
+
 	exitTaskDetails = () => {
 		this.setState({detailsOpen: false})
 	}
@@ -127,7 +128,7 @@ export class Home extends Component {
 	onModalSave = resolution => {
 		const taskId = this.getModalTaskId();
 		var task = this.state.tasks[taskId];
-		task.resolution = resolution
+		task.resolution = resolution;
 		this.setState({
 			modalOpen: false,
 			tasks: {

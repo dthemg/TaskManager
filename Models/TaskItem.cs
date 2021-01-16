@@ -12,8 +12,8 @@ namespace TaskManager.Models
         public string longDescription { get; set; }
         public string status { get; set; }
         public virtual List<Comment> comments { get; set; }
-
         public long EpicItemId { get; set; }
+        public string resolution { get; set; }
     }
 
     public class Comment

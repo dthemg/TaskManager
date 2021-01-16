@@ -2,8 +2,6 @@ import React from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
-import axios from 'axios';
-import { TASK_URL, CHANGE_TASK_ASSIGNEE_URL } from '../configuration/Urls';
 import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
 
 const Container = styled.div`
@@ -96,6 +94,16 @@ export class TaskDetails extends React.Component {
 		const comments = loading ? spinner : (
 			this.state.taskData.comments.map((item, index) => <p key={index}>{item.commentText}</p>)
 		);
+		console.log(this.state.taskData);
+		const resolution = loading ? spinner : (
+			this.state.taskData.status === "done" ? null : (
+				<div>
+					<h5>Resolution</h5>
+					{this.state.taskData.resolution}
+				</div>
+			)
+		);
+
 		return (
 			<Container>
 				<a href="#">
@@ -105,6 +113,7 @@ export class TaskDetails extends React.Component {
 					{header}
 					<h5>Status</h5>
 					{status}
+					{resolution}
 					<h5>People</h5>
 					{assignee}
 					<h5>Description</h5>
