@@ -124,7 +124,7 @@ export class Home extends Component {
 			.taskIds[this.state.modalTask.index];
 		return taskId;
 	}
-		
+
 	onModalSave = resolution => {
 		const taskId = this.getModalTaskId();
 		var task = this.state.tasks[taskId];

@@ -94,7 +94,6 @@ export class TaskDetails extends React.Component {
 		const comments = loading ? spinner : (
 			this.state.taskData.comments.map((item, index) => <p key={index}>{item.commentText}</p>)
 		);
-		console.log(this.state.taskData);
 		const resolution = loading ? spinner : (
 			this.state.taskData.status === "done" ? null : (
 				<div>

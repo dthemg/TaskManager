@@ -1,5 +1,7 @@
 ﻿import axios from 'axios';
-import { EPIC_URL, TASK_URL, CHANGE_TASK_ASSIGNEE_URL } from '../configuration/Urls';
+import {
+  EPIC_URL, TASK_URL, CHANGE_TASK_ASSIGNEE_URL, CHANGE_TASK_RESOLUTION_URL
+} from '../configuration/Urls';
 
 /* Drag-n-drop data format */
 export const EMPTY_COLUMNS = {
@@ -36,11 +38,10 @@ export async function loadEpic(epicId, onLoad) {
 
       data.taskItems.forEach(function (item, idx) {
         var id = item.id.toString();
-        newColumns["todo"]["taskIds"].push(id);
+        newColumns[item.status]["taskIds"].push(id);
         newTasks[id] = {
           ...item,
-          id: id,
-          resolution: null
+          id: id
         }
       });
       onLoad(newTasks, newColumns);
@@ -63,6 +64,23 @@ export async function loadTaskDetails(taskId, onLoad) {
     });
 }
 
+export async function changeTask(task, onLoad) {
+/* Update an entire task item */
+  var id = task.id;
+  const url = `${TASK_URL}${id}`
+  axios.put(url, task)
+    .then((response) => {
+      if (response.status === 204) {
+        onLoad(task)
+      } else {
+        console.error(`Task uppdate unsuccessful: ${response.status}`);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+}
+
 export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
   /* Change which user is assigned to a task */
   const url = `${CHANGE_TASK_ASSIGNEE_URL}${taskId}/${newAssignee}`;
@@ -71,7 +89,23 @@ export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
       if (response.status === 204) {
         onLoad(newAssignee)
       } else {
-        console.error(`Update not successful: ${response.status}`)
+        console.error(`Task update unsuccessful: ${response.status}`);
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+    });
+}
+
+export async function changeTaskResolution(taskId, newResolution, onLoad) {
+  /* Change the resolution of a finished task */
+  const url = `${CHANGE_TASK_RESOLUTION_URL}${taskId}/${newResolution}`;
+  axios.put(url)
+    .then((response) => {
+      if (response.status === 204) {
+        onLoad(newResolution)
+      } else {
+        console.error(`Task update unsuccessful: ${response.status}`)
       }
     })
     .catch((error) => {

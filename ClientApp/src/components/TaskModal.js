@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import styled from 'styled-components';
+import { changeTaskResolution } from '../utils/requests';
 
 const resolutionAlternatives = [
-	"Done",
-	"Can't reproduce",
-	"Duplicate",
-	"Won't do"
+	{ name: "Done", code: "done" },
+	{ name: "Can't reproduce", code: "cant-reproduce" },
+	{ name: "Duplicate", code: "duplicate" },
+	{ name: "Won't do", code: "wont-do" }
 ]
 
 const Container = styled.div`
@@ -24,7 +25,6 @@ const ButtonContainer = styled.div`
 	margin-top: 8px;
 `;
 
-
 export class TaskModal extends React.Component {
 	constructor(props) {
 		super(props);
@@ -32,6 +32,7 @@ export class TaskModal extends React.Component {
 			modalOpen: true,
 			dropDownOpen: false,
 			resolution: "Resolution",
+			resolutionCode: null,
 			saveButtonDisabled: true
 		};
 		this.toggleModalOpen = this.toggleModalOpen.bind(this);
@@ -54,12 +55,17 @@ export class TaskModal extends React.Component {
 	handleDropdownChange = (event) => {
 		this.setState({
 			resolution: event.currentTarget.textContent,
+			resolutionCode: event.currentTarget.value,
 			saveButtonDisabled: false
 		})
 	}
 
 	onSaveButtonClicked = (event) => {
-		this.props.onModalSave(this.state.resolution)
+		changeTaskResolution(
+			this.props.task.id,
+			this.state.resolutionCode,
+			this.props.onModalSave
+		);
 	}
 
 	render() {
@@ -87,11 +93,12 @@ export class TaskModal extends React.Component {
 							{resolutionAlternatives.map((alternative, index) => {
 								return (
 									<DropdownItem 
-										key={index} 
-										name={alternative}
+										key={index}
+										value={alternative.code}
+										name={alternative.name}
 										onClick={this.handleDropdownChange}
 									>
-										{alternative}
+										{alternative.name}
 									</DropdownItem>
 								)
 							})}
