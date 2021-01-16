@@ -85,7 +85,7 @@ export class TaskDetails extends React.Component {
 
 						}
 						});
-					this.props.onChangeTaskAssignee('10', newAssignee);
+					this.props.onChangeTaskAssignee(this.props.taskId, newAssignee);
 				} else {
 					console.error("Update did not work as expected", response);
 				}

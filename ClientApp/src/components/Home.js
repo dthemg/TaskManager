@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import Column from './Column';
 import TaskDetails from './TaskDetails';
 import TaskModal from './TaskModal';
-import { EPIC_URL } from '../configuration/Urls';
-import axios from 'axios';
+import { loadEpic, EMPTY_COLUMNS } from '../utils/requests';
 
 const DragDropContainer = styled.div`
 	display: flex;
@@ -18,77 +17,36 @@ const Container = styled.div`
 	justify-content: center;
 `
 
-const columns = {
-	'todo': {
-		id: 'todo',
-		title: 'TODO',
-		taskIds: []
-	},
-	'in-progress': {
-		id: 'in-progress',
-		title: 'In Progress',
-		taskIds: [],
-	},
-	'in-review': {
-		id: 'in-review',
-		title: 'In Review',
-		taskIds: []
-	},
-	'done': {
-		id: 'done',
-		title: 'Done',
-		taskIds: []
-	}
-};
-
 const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
 
 export class Home extends Component {
 	static displayName = Home.name;
-		state = {
-			tasks: {},
-			columnOrder: columnOrder,
-			columns: columns,
-			modalOpen: false,
-			previousStartColumn: null,
-			previousFinishColumn: null,
-			modalTask: null,
-			detailsOpen: false,
-			detailsId: null
-		};
+	state = {
+		tasks: {},
+		columnOrder: columnOrder,
+		columns: EMPTY_COLUMNS,
+		modalOpen: false,
+		previousStartColumn: null,
+		previousFinishColumn: null,
+		modalTask: null,
+		detailsOpen: false,
+		detailsId: null
+	};
+
+	constructor(props) {
+		super(props);
+		this.onLoadEpic = this.onLoadEpic.bind(this);
+	}
 
 	componentDidMount() {
-		this.populateTaskData()
+		loadEpic("4", this.onLoadEpic);
   }
 
-	async populateTaskData() {
-		const epicId = "4";
-		const getEpicURL = EPIC_URL.concat(epicId);
-		axios.get(getEpicURL)
-			.then((response) => {
-				var data = response.data;
-
-				var newTasks = {};
-				var newColumns = columns;
-
-				data.taskItems.forEach(function (item, idx) {
-					var id = item.id.toString()
-					newColumns["todo"]["taskIds"].push(id);
-					newTasks[id] = {
-						...item,
-						id: id,
-						resolution: "TODO"
-					};
-				});
-
-				this.setState({
-					tasks: newTasks,
-					columns: newColumns
-				})
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+	onLoadEpic(newTasks, newColumns) {
+		this.setState({
+			tasks: newTasks,
+			columns: newColumns
+		});
   }
 
 	updateTaskState = (destination, source, draggableId, sameColumn) => {
