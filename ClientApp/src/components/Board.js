@@ -12,14 +12,12 @@ const DragDropContainer = styled.div`
 	height: 100%;
 	width: 100%;
 	flex-flow: row;
-	border: 1px solid red;
 `;
 
 const Container = styled.div`
 	display: flex;
 	margin: 0px;
 	padding: 0px;
-	border: 1px solid blue;
 `
 
 const columnOrder = ['todo', 'in-progress', 'in-review', 'done']

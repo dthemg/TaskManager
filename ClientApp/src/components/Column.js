@@ -25,9 +25,10 @@ const Title = styled.h3`
 const TaskList = styled.div`
 	transition: background-color 0.2s ease;
 	background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
-	min-height: 100px;
-	min-width: 100px;
+	min-height: 50px;
+	min-width: 120px;
 	flex-grow: 1;
+	border: 1px solid red;
 `;
 
 class InnerList extends React.PureComponent {
