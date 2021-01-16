@@ -4,6 +4,7 @@ import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import axios from 'axios';
 import { TASK_URL, CHANGE_TASK_ASSIGNEE_URL } from '../configuration/Urls';
+import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -29,71 +30,39 @@ export class TaskDetails extends React.Component {
 			loading: true,
 			teamMembers: null
 		};
-		
+		this.onLoadTask = this.onLoadTask.bind(this);
+		this.onAssigneeWasChanged = this.onAssigneeWasChanged.bind(this);
 	}
 
 	componentDidMount() {
-		this.populateTaskData();
+		loadTaskDetails(this.props.taskId, this.onLoadTask);
 	}
+
+	onLoadTask(taskData) {
+		this.setState({
+			loading: false,
+			taskData: taskData,
+			teamMembers: ['Jonas', 'David', 'Fredrik']
+    })
+  }
 
 	onClickExit = (event) => {
 		this.props.exitTaskDetails();
 	}
 
-	async populateTaskData() {
-		const getTaskURL = TASK_URL.concat(this.props.taskId.toString());
-
-		var self = this;
-		axios.get(getTaskURL)
-			.then((response) => {
-				var data = response.data;
-				self.setState({
-					taskData: {
-						'title': data.title,
-						'assignee': data.assignee,
-						'longDescription': data.longDescription,
-						'status': data.status,
-						'id': data.id,
-						'comments': data.comments
-					},
-					teamMembers: [
-						'Jonas', 'David', 'Fredrik'
-					],
-					loading: false
-				});
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	}
-
 	onAssigneeChange = (event) => {
 		var newAssignee = event.target.value
-		this.changeAssignee(newAssignee);
+		changeTaskAssignee(this.props.taskId, newAssignee, this.onAssigneeWasChanged);
 	}
 
-	async changeAssignee(newAssignee) {
-		const putTaskUrl = `${CHANGE_TASK_ASSIGNEE_URL}${this.props.taskId}/${newAssignee}`;
-
-		axios.put(putTaskUrl)
-			.then(response => {
-				if (response.status === 204) {
-					this.setState({
-						taskData: {
-							...this.state.taskData,
-							assignee: newAssignee
-
-						}
-						});
-					this.props.onChangeTaskAssignee(this.props.taskId, newAssignee);
-				} else {
-					console.error("Update did not work as expected", response);
-				}
-
-			})
-			.catch(error => {
-				console.log(error);
-			})
+	onAssigneeWasChanged(newAssignee) {
+		this.setState({
+			taskData: {
+				...this.state.taskData,
+				assignee: newAssignee
+			}
+		})
+		this.props.onChangeTaskAssignee(this.props.taskId, newAssignee)
   }
 
 	renderAssigneeDropdown = () => {

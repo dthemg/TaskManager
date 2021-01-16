@@ -1,5 +1,5 @@
 ﻿import axios from 'axios';
-import { EPIC_URL } from '../configuration/Urls';
+import { EPIC_URL, TASK_URL, CHANGE_TASK_ASSIGNEE_URL } from '../configuration/Urls';
 
 /* Drag-n-drop data format */
 export const EMPTY_COLUMNS = {
@@ -46,6 +46,37 @@ export async function loadEpic(epicId, onLoad) {
       onLoad(newTasks, newColumns);
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
 };
+
+export async function loadTaskDetails(taskId, onLoad) {
+  /* Load task details */
+  const url = `${TASK_URL}${taskId.toString()}`;
+  axios.get(url)
+    .then((response) => {
+      var data = response.data;
+      onLoad(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
+  /* Change which user is assigned to a task */
+  const url = `${CHANGE_TASK_ASSIGNEE_URL}${taskId}/${newAssignee}`;
+  console.log(url);
+  axios.put(url)
+    .then((response) => {
+      if (response.status === 204) {
+        onLoad(newAssignee)
+        console.log(newAssignee)
+      } else {
+        console.error(`Update not successful: ${response.status}`)
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+    });
+}
