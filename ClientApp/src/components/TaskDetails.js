@@ -7,11 +7,9 @@ import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
 const Container = styled.div`
 	border: 1px solid lightgrey;
 	overflow-x: visible;
-	width: 300px;
-	display: flex;
 	position: relative;
 	padding: 16px;
-	flex-direction: row;
+	width: 500px;
 `
 
 const Cross = styled.input`

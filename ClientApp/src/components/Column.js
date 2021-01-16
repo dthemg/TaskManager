@@ -9,6 +9,8 @@ const ColumnContainer = styled.div`
 	border-radius: 2px;
 	flex-grow: 1;
 	flex-basis: 0;
+	display: flex;
+	flex-direction: column;
 `;
 
 const Title = styled.h3`
@@ -25,6 +27,7 @@ const TaskList = styled.div`
 	background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
 	min-height: 100px;
 	min-width: 100px;
+	flex-grow: 1;
 `;
 
 class InnerList extends React.PureComponent {
