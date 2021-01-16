@@ -3,7 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import axios from 'axios';
-import { TASK_URL } from '../configuration/Urls';
+import { TASK_URL, CHANGE_TASK_ASSIGNEE_URL } from '../configuration/Urls';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -41,11 +41,7 @@ export class TaskDetails extends React.Component {
 	}
 
 	async populateTaskData() {
-		// Sample response
-		//const response = await fetch('taskdata');
-		//const data = await response.json();
-		const taskId = "10";
-		const getTaskURL = TASK_URL.concat(taskId);
+		const getTaskURL = TASK_URL.concat(this.props.taskId.toString());
 
 		var self = this;
 		axios.get(getTaskURL)
@@ -72,27 +68,24 @@ export class TaskDetails extends React.Component {
 	}
 
 	onAssigneeChange = (event) => {
-		const taskId = "10"
 		var newAssignee = event.target.value
-		const newTaskData = {
-			...this.state.taskData,
-			assignee: newAssignee,
-			id: taskId
-		}
-		this.updateTask(newTaskData);
+		this.changeAssignee(newAssignee);
 	}
 
-	async updateTask(newTaskData) {
-		const taskId = "10";
-		const putTaskUrl = TASK_URL.concat(taskId.toString())
-		axios.put(putTaskUrl, newTaskData)
+	async changeAssignee(newAssignee) {
+		const putTaskUrl = `${CHANGE_TASK_ASSIGNEE_URL}${this.props.taskId}/${newAssignee}`;
+
+		axios.put(putTaskUrl)
 			.then(response => {
 				if (response.status === 204) {
-					this.setState({ taskData: newTaskData });
-					this.props.onChangeTaskAssignee(
-						'task-1',
-						newTaskData.assignee
-					);
+					this.setState({
+						taskData: {
+							...this.state.taskData,
+							assignee: newAssignee
+
+						}
+						});
+					this.props.onChangeTaskAssignee('10', newAssignee);
 				} else {
 					console.error("Update did not work as expected", response);
 				}

@@ -53,7 +53,8 @@ export class Home extends Component {
 			previousStartColumn: null,
 			previousFinishColumn: null,
 			modalTask: null,
-			detailsOpen: false
+			detailsOpen: false,
+			detailsId: null
 		};
 
 	componentDidMount() {
@@ -179,7 +180,10 @@ export class Home extends Component {
 	}
 
 	onClickTask = (taskId) => {
-		this.setState({detailsOpen: true});
+		this.setState({
+			detailsOpen: true,
+			detailsId: taskId
+		});
 	}
 
 	onChangeTaskAssignee = (taskId, assignee) => {
@@ -238,6 +242,7 @@ export class Home extends Component {
 				<TaskDetails 
 					exitTaskDetails={this.exitTaskDetails}
 					onChangeTaskAssignee={this.onChangeTaskAssignee}
+					taskId={this.state.detailsId}
 				/> : null
 		);
 

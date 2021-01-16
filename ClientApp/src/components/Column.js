@@ -23,7 +23,7 @@ const TaskList = styled.div`
 	background-color: ${props => (props.isDraggingOver ? 'lightgrey' : 'white')};
 	flex-grow: 1;
 	min-height: 100px;
-	min-width: 100px;
+	min-width: 120px;
 `;
 
 class InnerList extends React.PureComponent {

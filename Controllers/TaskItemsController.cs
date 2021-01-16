@@ -43,6 +43,33 @@ namespace TaskManager.Controllers
             return taskItem;
         }
 
+        // PUT: api/TaskItems/changeAssignee/5
+        [HttpPut("changeAssignee/{id}/{newAssignee}")]
+        public async Task<IActionResult> PutTaskAssignee(long id, string newAssignee)
+		{
+            var task = new TaskItem() { Id = id, assignee = newAssignee };
+            try 
+            {
+                _context.TaskItems.Attach(task);
+                _context.Entry(task).Property(item => item.assignee).IsModified = true;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+			{
+                if (!TaskItemExists(id))
+				{
+                    return NotFound();
+				}
+                else 
+                {
+                    throw;
+                }
+			}
+            return NoContent();
+		}
+
+
+
         // PUT: api/TaskItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
