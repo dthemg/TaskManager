@@ -19,8 +19,8 @@ const Container = styled.div`
 
 const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
 
-export class Home extends Component {
-	static displayName = Home.name;
+export class Board extends Component {
+	static displayName = Board.name;
 	state = {
 		tasks: {},
 		columnOrder: columnOrder,
