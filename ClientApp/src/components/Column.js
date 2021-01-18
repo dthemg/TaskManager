@@ -28,7 +28,6 @@ const TaskList = styled.div`
 	min-height: 50px;
 	min-width: 120px;
 	flex-grow: 1;
-	border: 1px solid red;
 `;
 
 class InnerList extends React.PureComponent {
