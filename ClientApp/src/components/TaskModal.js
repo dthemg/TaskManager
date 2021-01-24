@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import styled from 'styled-components';
 import { changeTaskResolution } from '../utils/requests';
+import axios from 'axios';
 
 const resolutionAlternatives = [
 	{ name: "Done", code: "done" },
@@ -38,6 +39,7 @@ export class TaskModal extends React.Component {
 		this.toggleModalOpen = this.toggleModalOpen.bind(this);
 		this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this);
 		this.handleDropdownChange = this.handleDropdownChange.bind(this);
+		this.axiosCancelHandler = axios.CancelToken.source();
 	}
 
 	toggleModalOpen = () => {
@@ -61,10 +63,12 @@ export class TaskModal extends React.Component {
 	}
 
 	onSaveButtonClicked = (event) => {
+		let options = { cancelToken: this.axiosCancelHandler.token };
 		changeTaskResolution(
 			this.props.task.id,
 			this.state.resolutionCode,
-			this.props.onModalSave
+			this.props.onModalSave,
+			options
 		);
 	}
 

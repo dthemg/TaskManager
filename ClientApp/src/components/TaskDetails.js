@@ -3,6 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
 import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
+import axios from 'axios';
 
 const Container = styled.div`
 	border: 1px solid lightgrey;
@@ -26,12 +27,14 @@ export class TaskDetails extends React.Component {
 			loading: true,
 			teamMembers: null
 		};
+		this.axiosCancelHandler = axios.CancelToken.source();
 		this.onLoadTask = this.onLoadTask.bind(this);
 		this.onAssigneeWasChanged = this.onAssigneeWasChanged.bind(this);
 	}
 
 	componentDidMount() {
-		loadTaskDetails(this.props.taskId, this.onLoadTask);
+		let options = { cancelToken: this.axiosCancelHandler.token };
+		loadTaskDetails(this.props.taskId, this.onLoadTask, options);
 	}
 
 	onLoadTask(taskData) {
@@ -47,8 +50,9 @@ export class TaskDetails extends React.Component {
 	}
 
 	onAssigneeChange = (event) => {
-		var newAssignee = event.target.value
-		changeTaskAssignee(this.props.taskId, newAssignee, this.onAssigneeWasChanged);
+		let newAssignee = event.target.value
+		let options = { cancelToken: this.axiosCancelHandler.token };
+		changeTaskAssignee(this.props.taskId, newAssignee, this.onAssigneeWasChanged, options);
 	}
 
 	onAssigneeWasChanged(newAssignee) {

@@ -5,6 +5,7 @@ import Column from './Column';
 import TaskDetails from './TaskDetails';
 import TaskModal from './TaskModal';
 import { loadEpic, EMPTY_COLUMNS } from '../utils/requests';
+import axios from 'axios';
 
 const DragDropContainer = styled.div`
 	display: flex;
@@ -22,28 +23,34 @@ const Container = styled.div`
 
 const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
 
+
 export class Board extends Component {
 	static displayName = Board.name;
-	state = {
-		tasks: {},
-		columnOrder: columnOrder,
-		columns: EMPTY_COLUMNS,
-		modalOpen: false,
-		previousStartColumn: null,
-		previousFinishColumn: null,
-		modalTask: null,
-		detailsOpen: false,
-		detailsId: null
-	};
-
+	
 	constructor(props) {
 		super(props);
 		this.onLoadEpic = this.onLoadEpic.bind(this);
+		this.state = {
+			tasks: {},
+			columnOrder: columnOrder,
+			columns: EMPTY_COLUMNS,
+			modalOpen: false,
+			previousStartColumn: null,
+			modalTask: null,
+			detailsOpen: false,
+			detailsId: null
+		};
+		this.axiosCancelHandler = axios.CancelToken.source();
 	}
 
-	componentDidMount() {
-		loadEpic("4", this.onLoadEpic);
+	createMapCopy(obj) {
+		return JSON.parse(JSON.stringify(obj));
   }
+
+	componentDidMount() {
+		let options = { cancelToken: this.axiosCancelHandler.token }
+		loadEpic("4", this.onLoadEpic, options);
+	}
 
 	onLoadEpic(newTasks, newColumns) {
 		this.setState({
@@ -94,7 +101,6 @@ export class Board extends Component {
 				taskIds: finishTaskIds
 			}
 		}
-		
 		this.setState({
 			columns: columns
 		})
@@ -130,7 +136,7 @@ export class Board extends Component {
 
 	onModalSave = resolution => {
 		const taskId = this.getModalTaskId();
-		var task = this.state.tasks[taskId];
+		let task = this.state.tasks[taskId];
 		task.resolution = resolution;
 		this.setState({
 			modalOpen: false,
@@ -187,7 +193,7 @@ export class Board extends Component {
 	};
 
 	render() {
-		var task = null;
+		let task = null;
 		if (this.notNull(this.state.modalTask)) {
 			task = this.state.tasks[this.getModalTaskId()];
 		}

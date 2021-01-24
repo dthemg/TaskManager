@@ -27,17 +27,18 @@ export const EMPTY_COLUMNS = {
   }
 };
 
-export async function loadEpic(epicId, onLoad) {
-  /* Load epic into a drag-n-drop-friendly format */
+export async function loadEpic(epicId, onLoad, options) {
+/* Load epic into a drag-n-drop-friendly format */
   const url = `${EPIC_URL}${epicId.toString()}`;
-  axios.get(url)
+  axios.get(url, options)
     .then((response) => {
-      var data = response.data;
-      var newTasks = {};
-      var newColumns = EMPTY_COLUMNS;
+      let data = response.data;
+      let newTasks = {};
+      // Make deep copy of empty columns
+      let newColumns = JSON.parse(JSON.stringify(EMPTY_COLUMNS));
 
       data.taskItems.forEach(function (item, idx) {
-        var id = item.id.toString();
+        let id = item.id.toString();
         newColumns[item.status]["taskIds"].push(id);
         newTasks[id] = {
           ...item,
@@ -51,12 +52,12 @@ export async function loadEpic(epicId, onLoad) {
     });
 };
 
-export async function loadTaskDetails(taskId, onLoad) {
-  /* Load task details */
+export async function loadTaskDetails(taskId, onLoad, options) {
+/* Load task details */
   const url = `${TASK_URL}${taskId.toString()}`;
-  axios.get(url)
+  axios.get(url, options)
     .then((response) => {
-      var data = response.data;
+      let data = response.data;
       onLoad(data);
     })
     .catch((error) => {
@@ -64,11 +65,11 @@ export async function loadTaskDetails(taskId, onLoad) {
     });
 }
 
-export async function changeTask(task, onLoad) {
+export async function changeTask(task, onLoad, options) {
 /* Update an entire task item */
-  var id = task.id;
+  let id = task.id;
   const url = `${TASK_URL}${id}`
-  axios.put(url, task)
+  axios.put(url, task, options)
     .then((response) => {
       if (response.status === 204) {
         onLoad(task)
@@ -81,10 +82,10 @@ export async function changeTask(task, onLoad) {
     })
 }
 
-export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
-  /* Change which user is assigned to a task */
+export async function changeTaskAssignee(taskId, newAssignee, onLoad, options) {
+/* Change which user is assigned to a task */
   const url = `${CHANGE_TASK_ASSIGNEE_URL}${taskId}/${newAssignee}`;
-  axios.put(url)
+  axios.put(url, null, options)
     .then((response) => {
       if (response.status === 204) {
         onLoad(newAssignee)
@@ -97,10 +98,10 @@ export async function changeTaskAssignee(taskId, newAssignee, onLoad) {
     });
 }
 
-export async function changeTaskResolution(taskId, newResolution, onLoad) {
-  /* Change the resolution of a finished task */
+export async function changeTaskResolution(taskId, newResolution, onLoad, options) {
+/* Change the resolution of a finished task */
   const url = `${CHANGE_TASK_RESOLUTION_URL}${taskId}/${newResolution}`;
-  axios.put(url)
+  axios.put(url, null, options)
     .then((response) => {
       if (response.status === 204) {
         onLoad(newResolution)

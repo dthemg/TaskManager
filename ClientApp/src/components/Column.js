@@ -33,10 +33,10 @@ const TaskList = styled.div`
 class InnerList extends React.PureComponent {
 	render() {
 		return this.props.tasks.map((task, index) => (
-			<Task 
-				key={task.id} 
-				task={task} 
-				index={index} 
+			<Task
+				key={task.id}
+				task={task}
+				index={index}
 				onClickTask={this.props.onClickTask}
 				columnId={this.props.columnId}
 			/>)
