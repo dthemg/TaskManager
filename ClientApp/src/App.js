@@ -13,7 +13,7 @@ export default class App extends Component {
   render () {
     return (
       <Layout>
-        <Route exact path='/' component={Board} />
+        <Route exact path='/board' component={Board} />
         <Route exact path='/create' component={Create} />
       </Layout>
     );

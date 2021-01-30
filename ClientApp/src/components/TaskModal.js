@@ -1,131 +1,135 @@
 import React from 'react';
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import Spinner from 'react-bootstrap/Spinner';
+import { Input, Label } from 'reactstrap';
 import styled from 'styled-components';
-import { changeTaskResolution } from '../utils/requests';
+import { loadTaskDetails, changeTaskAssignee } from '../utils/requests';
 import axios from 'axios';
 
-const resolutionAlternatives = [
-	{ name: "Done", code: "done" },
-	{ name: "Can't reproduce", code: "cant-reproduce" },
-	{ name: "Duplicate", code: "duplicate" },
-	{ name: "Won't do", code: "wont-do" }
-]
-
 const Container = styled.div`
-	margin: 8px;
-	flex-grow: 1;
-	min-height: 100px;
-	flex-direction: column;
-`;
+	border: 1px solid lightgrey;
+	overflow-x: visible;
+	position: relative;
+	padding: 16px;
+	width: 500px;
+`
 
-const DropdownContainer = styled.div`
-	margin-top: 8px;
-`;
+const Cross = styled.input`
+	position: absolute;
+	right: 16px;
+	top: 16px;
+`
 
-const ButtonContainer = styled.div`
-	margin-top: 8px;
-`;
-
-export class TaskModal extends React.Component {
+export class TaskDetails extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { 
-			modalOpen: true,
-			dropDownOpen: false,
-			resolution: "Resolution",
-			resolutionCode: null,
-			saveButtonDisabled: true
+		this.state = {
+			taskData: null, 
+			loading: true,
+			teamMembers: null
 		};
-		this.toggleModalOpen = this.toggleModalOpen.bind(this);
-		this.toggleDropdownOpen = this.toggleDropdownOpen.bind(this);
-		this.handleDropdownChange = this.handleDropdownChange.bind(this);
 		this.axiosCancelHandler = axios.CancelToken.source();
+		this.onLoadTask = this.onLoadTask.bind(this);
+		this.onAssigneeWasChanged = this.onAssigneeWasChanged.bind(this);
 	}
 
-	toggleModalOpen = () => {
-		this.setState({
-			modalOpen: !this.state.modalOpen
-		});
-	};
-
-	toggleDropdownOpen = () => {
-		this.setState({
-			dropDownOpen: !this.state.dropDownOpen
-		})
-	}
-
-	handleDropdownChange = (event) => {
-		this.setState({
-			resolution: event.currentTarget.textContent,
-			resolutionCode: event.currentTarget.value,
-			saveButtonDisabled: false
-		})
-	}
-
-	onSaveButtonClicked = (event) => {
+	componentDidMount() {
 		let options = { cancelToken: this.axiosCancelHandler.token };
-		changeTaskResolution(
-			this.props.task.id,
-			this.state.resolutionCode,
-			this.props.onModalSave,
-			options
-		);
+		loadTaskDetails(this.props.taskId, this.onLoadTask, options);
+	}
+
+	onLoadTask(taskData) {
+		this.setState({
+			loading: false,
+			taskData: taskData,
+			teamMembers: ['Jonas', 'David', 'Fredrik']
+    })
+  }
+
+	onClickExit = (event) => {
+		this.props.exitTaskDetails();
+	}
+
+	onAssigneeChange = (event) => {
+		let newAssignee = event.target.value
+		let options = { cancelToken: this.axiosCancelHandler.token };
+		changeTaskAssignee(this.props.taskId, newAssignee, this.onAssigneeWasChanged, options);
+	}
+
+	onAssigneeWasChanged(newAssignee) {
+		this.setState({
+			taskData: {
+				...this.state.taskData,
+				assignee: newAssignee
+			}
+		})
+		this.props.onChangeTaskAssignee(this.props.taskId, newAssignee)
+  }
+
+	renderAssigneeDropdown = () => {
+		return (
+			<div>
+			<Label for="assigneeSelect">Assignee</Label>
+				<Input 
+					value={this.state.taskData.assignee} 
+					type="select" 
+					bsSize="small" 
+					name="assignee" 
+					id="assigneeSelect"
+					onChange={this.onAssigneeChange}
+				>
+					{this.state.teamMembers.map((value, index) => (
+						<option key={index}>{value}</option>
+					))}
+				</Input>
+			</div>
+		) 
 	}
 
 	render() {
-		return (
-			<Modal 
-				isOpen={this.state.modalOpen}
-				onClosed={this.props.onModalClose}
-			>
-				<ModalHeader toggle={this.toggleModalOpen}>
-					Task resolution - {this.props.task.title}
-				</ModalHeader>
-				<ModalBody>
-					<Container>
-					<h4>Select resolution:</h4>
-					<DropdownContainer>
-					<Dropdown
-						isOpen={this.state.dropDownOpen} 
-						toggle={this.toggleDropdownOpen}
-						size="sm"
-					>
-						<DropdownToggle caret>
-							{this.state.resolution}
-						</DropdownToggle>
-						<DropdownMenu>
-							{resolutionAlternatives.map((alternative, index) => {
-								return (
-									<DropdownItem 
-										key={index}
-										value={alternative.code}
-										name={alternative.name}
-										onClick={this.handleDropdownChange}
-									>
-										{alternative.name}
-									</DropdownItem>
-								)
-							})}
-						</DropdownMenu>
-					</Dropdown>
-					</DropdownContainer>
-					<h4>Description:</h4>
-					{this.props.task.description}
-					<ButtonContainer>
-						<Button 
-							color={this.state.saveButtonDisabled ? "secondary": "primary"} 
-							disabled={this.state.saveButtonDisabled}
-							size="sm"
-							onClick={this.onSaveButtonClicked}
-						>
-							Save
-						</Button>
-					</ButtonContainer>
-					</Container>
-				</ModalBody>
-			</Modal>
-		)
-	}
-};
+		const x = require('./x.svg')
+		const loading = this.state.loading;
+		const spinner = <Spinner size="sm" animation="border"/>
+		const status = loading ? spinner : this.state.taskData.status;
+		const header = loading ? spinner : <h3>{this.state.taskData.title}</h3>;
+		const description = loading ? spinner : this.state.taskData.longDescription; 
+		const assignee = loading ? spinner : this.renderAssigneeDropdown();
+		const comments = loading ? spinner : (
+			this.state.taskData.comments.map((item, index) => <p key={index}>{item.commentText}</p>)
+		);
+		const resolution = loading ? spinner : (
+			this.state.taskData.status === "done" ? null : (
+				<div>
+					<h5>Resolution</h5>
+					{this.state.taskData.resolution}
+				</div>
+			)
+		);
 
-export default TaskModal;
+		return (
+			<Container>
+				<Cross
+					onClick={this.onClickExit}
+					type="image"
+					src={x}
+				>
+				</Cross>
+
+				<div>
+					{header}
+					<h5>Status</h5>
+					{status}
+					{resolution}
+					<h5>People</h5>
+					{assignee}
+					<h5>Description</h5>
+					{description}
+					<h5>Comments</h5>
+					{comments}
+				</div>
+				
+			</Container>
+		)		
+	}
+}
+
+export default TaskDetails;

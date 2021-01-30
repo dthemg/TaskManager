@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Column from './Column';
-import TaskDetails from './TaskDetails';
-import TaskModal from './TaskModal';
+import TaskDetails from './TaskModal';
+import IssueModal from './IssueModal';
+import TaskModal from './ResolutionModal';
 import { loadEpic, EMPTY_COLUMNS } from '../utils/requests';
 import axios from 'axios';
 
@@ -27,9 +28,13 @@ const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
 export class Board extends Component {
 	static displayName = Board.name;
 	
+
 	constructor(props) {
 		super(props);
 		this.onLoadEpic = this.onLoadEpic.bind(this);
+
+		// Open modal for this task
+		let selectedIssue = new URLSearchParams(this.props.location.search).get("selectedIssue");
 		this.state = {
 			tasks: {},
 			columnOrder: columnOrder,
@@ -38,14 +43,10 @@ export class Board extends Component {
 			previousStartColumn: null,
 			modalTask: null,
 			detailsOpen: false,
-			detailsId: null
+			selectedIssue: selectedIssue
 		};
 		this.axiosCancelHandler = axios.CancelToken.source();
 	}
-
-	createMapCopy(obj) {
-		return JSON.parse(JSON.stringify(obj));
-  }
 
 	componentDidMount() {
 		let options = { cancelToken: this.axiosCancelHandler.token }
@@ -192,6 +193,12 @@ export class Board extends Component {
 		this.updateTaskState(destination, source, draggableId, sameColumn)
 	};
 
+	onIssueClose() {
+		this.setState({
+			selectedIssue: null
+		});
+  }
+
 	render() {
 		let task = null;
 		if (this.notNull(this.state.modalTask)) {
@@ -214,6 +221,12 @@ export class Board extends Component {
 				/> : null
 		);
 
+		const issueModal = (
+			this.state.selectedIssue ? 
+				<IssueModal
+					taskId={this.state.selectedIssue}
+				/> : null
+		)
 		return (
 			<Container>
 				<DragDropContainer>
@@ -239,6 +252,7 @@ export class Board extends Component {
 					</DragDropContext>
 				</DragDropContainer>
 				{taskDetails}
+				{issueModal}
 			</Container>
 		)
 	};
