@@ -2,6 +2,7 @@
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
+
 const TaskBox = styled.div`
 	border: 1px solid lightgrey;
 	border-radius: 2px;
@@ -41,7 +42,11 @@ const Description = styled.p`
 
 export default class Task extends React.Component {
 
-	onClickTask = (event) => {
+	constructor(props) {
+		super(props);
+  }
+
+	onClickTask(event) {
 		this.props.onClickTask(this.props.task.id);
 	}
 
@@ -70,7 +75,7 @@ export default class Task extends React.Component {
 				<Assignee>
 					{this.props.task.assignee ? this.props.task.assignee : "Unassigned"}
 				</Assignee>
-			</TaskBox>
+				</TaskBox>
 			)}
 		</Draggable>
 		);

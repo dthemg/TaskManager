@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import Column from './Column';
-import TaskDetails from './TaskModal';
 import IssueModal from './IssueModal';
 import TaskModal from './ResolutionModal';
 import { loadEpic, EMPTY_COLUMNS } from '../utils/requests';
@@ -27,7 +26,6 @@ const columnOrder = ['todo', 'in-progress', 'in-review', 'done']
 
 export class Board extends Component {
 	static displayName = Board.name;
-	
 
 	constructor(props) {
 		super(props);
@@ -35,6 +33,8 @@ export class Board extends Component {
 
 		// Open modal for this task
 		let selectedIssue = new URLSearchParams(this.props.location.search).get("selectedIssue");
+		let issueModalOpen = (selectedIssue !== null);
+		console.log(issueModalOpen);
 		this.state = {
 			tasks: {},
 			columnOrder: columnOrder,
@@ -46,6 +46,7 @@ export class Board extends Component {
 			selectedIssue: selectedIssue
 		};
 		this.axiosCancelHandler = axios.CancelToken.source();
+		this.onIssueClose = this.onIssueClose.bind(this);
 	}
 
 	componentDidMount() {
@@ -150,9 +151,10 @@ export class Board extends Component {
 
 	onClickTask = (taskId) => {
 		this.setState({
-			detailsOpen: true,
-			detailsId: taskId
+			selectedIssue: taskId,
+			issueModalOpen: true
 		});
+		this.props.history.push(`/board?selectedIssue=${taskId}`);
 	}
 
 	onChangeTaskAssignee = (taskId, assignee) => {
@@ -195,7 +197,8 @@ export class Board extends Component {
 
 	onIssueClose() {
 		this.setState({
-			selectedIssue: null
+			selectedIssue: null,
+			issueModalOpen: false
 		});
   }
 
@@ -212,6 +215,7 @@ export class Board extends Component {
 					task={task}
 				/> : null
 		);
+		/* Remove taskDetails references when done
 		const taskDetails = (
 			this.state.detailsOpen ? 
 				<TaskDetails 
@@ -220,11 +224,13 @@ export class Board extends Component {
 					taskId={this.state.detailsId}
 				/> : null
 		);
+		*/
 
 		const issueModal = (
-			this.state.selectedIssue ? 
+			this.state.issueModalOpen ? 
 				<IssueModal
 					taskId={this.state.selectedIssue}
+					onIssueClose={this.onIssueClose}
 				/> : null
 		)
 		return (
@@ -251,7 +257,6 @@ export class Board extends Component {
 						
 					</DragDropContext>
 				</DragDropContainer>
-				{taskDetails}
 				{issueModal}
 			</Container>
 		)
